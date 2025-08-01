@@ -14,4 +14,8 @@ router.get("/createaccount", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/createaccount.html"));
 });
 
+router.get("/emailverification", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/emailverification.html"));
+});
+
 module.exports = router;

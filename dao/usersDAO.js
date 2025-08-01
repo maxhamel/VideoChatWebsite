@@ -1,5 +1,6 @@
 const mongodb = require("mongoose");
 const User = require("../models/user");
+const nodemailer = require("nodemailer");
 
 const ObjectId = mongodb.ObjectID;
 
@@ -22,6 +23,29 @@ class UsersDAO {
         verificationKey,
         isVerified,
       });
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Welcome to TerpCrawl!",
+        text: `Thanks for creating an account! Your verfification code is: ${verificationKey}`,
+        html: `<h1>Welcome to TerpCrawl!</h1><p>Your verification code is: <strong>${verificationKey}</strong></p>`,
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          return console.error("Error sending email:", error);
+        }
+        console.log("Email sent:", info.response);
+      });
+
       return await newUser.save();
     } catch (e) {
       console.error(`Unable to save user: ${e}`);
