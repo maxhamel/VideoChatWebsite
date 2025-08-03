@@ -13,7 +13,7 @@ const path = require("path");
 
 const app = express();
 
-app.use(express.static("docs"));
+app.use(express.static("public"));
 app.use("/", indexRouter);
 app.listen(process.env.PORT || 3000);
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,7 +34,7 @@ app.post("/register", async (req, res) => {
   const emailcheck = await User.findOne({ email: req.body.email });
 
   let loginPage = fs.readFileSync(
-    path.join(__dirname, "docs", "createaccount.html"),
+    path.join(__dirname, "public", "createaccount.html"),
     "utf-8"
   );
 
@@ -74,11 +74,15 @@ app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     const user = await User.findOne({ username: req.body.username });
-    const validPassword = await bcrypt.compare(password, user.password);
+    let validPassword = false;
+
+    if (user) {
+      validPassword = await bcrypt.compare(password, user.password);
+    }
 
     if (!user || !validPassword) {
       let loginPage = fs.readFileSync(
-        path.join(__dirname, "docs", "login.html"),
+        path.join(__dirname, "public", "login.html"),
         "utf-8"
       );
       loginPage = loginPage.replace(
@@ -87,7 +91,7 @@ app.post("/login", async (req, res) => {
       );
       return res.send(loginPage);
     } else {
-      res.send("Good job you logged in");
+      res.redirect("/chat");
     }
   } catch (err) {
     console.error(err);
@@ -100,7 +104,7 @@ app.post("/email-verification", async (req, res) => {
   const user = await User.findOne({ username: username });
 
   let verifyPage = fs.readFileSync(
-    path.join(__dirname, "docs", "emailverification.html"),
+    path.join(__dirname, "public", "emailverification.html"),
     "utf-8"
   );
 
