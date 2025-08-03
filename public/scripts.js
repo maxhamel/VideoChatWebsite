@@ -137,8 +137,6 @@ const answerOffer = async (offerObj) => {
   await createPeerConnection(offerObj);
   const answer = await peerConnection.createAnswer({});
   await peerConnection.setLocalDescription(answer);
-  console.log(offerObj);
-  console.log(answer);
 
   offerObj.answer = answer;
 
@@ -147,7 +145,6 @@ const answerOffer = async (offerObj) => {
     peerConnection.addIceCandidate(c);
     console.log("======Added Ice Candidate======");
   });
-  console.log(offerIceCandidates);
 };
 
 const addAnswer = async (offerObj) => {
